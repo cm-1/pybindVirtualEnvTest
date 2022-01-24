@@ -50,3 +50,8 @@ Links on modifying `sys.path`:
     * [A general overview](https://stackoverflow.com/a/23845366)
     * [How to do it with Python 3 and a non-virtualenv setup.](https://stackoverflow.com/a/33637414)
     * [An example activate_this.py from official Virtualenv GitHub.](https://github.com/pypa/virtualenv/blob/main/src/virtualenv/activation/python/activate_this.py)
+
+## License
+The pybind11 which is included as a submodule uses a license very similar to the BSD license I chose for this repo, but pybind11's is slightly customized. Please keep this in mind if you utilize anything from this project, and check out their license.
+
+I hope my choice of license is okay. After reading through [this discussion](https://softwareengineering.stackexchange.com/questions/240633/is-licensing-an-issue-for-git-submodules), it seems it should be, though.
