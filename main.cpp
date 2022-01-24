@@ -13,20 +13,17 @@ int main() {
     py::print("Hello, World from Python!");
     py::print(sys.attr("executable"));
     py::print(sys.attr("version"), "flush"_a = true);
-    sys.attr("path").attr("insert")(1, VENV_SITE_PACKAGES_PATH);
+    //sys.attr("path").attr("insert")(1, VENV_SITE_PACKAGES_PATH);
     py::print("Env Path: ", os.attr("environ").attr("get")("PATH"));
     py::print(sys.attr("path"), "flush"_a=true);
 
 
 
-    std::cout << "Before numpy." << std::endl;
-    // works until here
-    // Evaluate a sequence of statements
+    std::cout << "Before import test." << std::endl;
     py::object scope = py::module_::import("__main__").attr("__dict__");
     py::exec(
         "d = {'zero': 0, 'two': 2, 'three': 3}\n"
-        "print(d)\n"
-        "print('Brutaka!');",
+        "print(d)",
         scope);
     py::print("Now testing pandas...", "flush"_a=true);
     auto pd = py::module::import("pandas");
