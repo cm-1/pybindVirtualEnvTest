@@ -28,3 +28,13 @@ target_link_libraries(pybindVirtualEnvTest PRIVATE pybind11::embed)
 
 target_compile_definitions(pybindVirtualEnvTest PRIVATE -DVENV_SITE_PACKAGES_PATH="${VENV_ROOT_PATH}/lib/python3.5/site-packages")
 
+set(LOCAL_PYTHON_FILES
+    "example.py"
+)
+
+# See: https://stackoverflow.com/a/65133324
+# Should allow copying of python files so that the final executable can find them.
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/customPython ${CMAKE_CURRENT_BINARY_DIR}/customPython
+)
+add_dependencies(pybindVirtualEnvTest copy_assets)

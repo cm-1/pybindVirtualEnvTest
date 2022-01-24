@@ -29,6 +29,18 @@ int main() {
     auto pd = py::module::import("pandas");
     py::print(pd.attr("__version__"), "flush"_a = true);
 
+    py::print("Now testing my own local .py file...", "flush"_a=true);
+    // Performs "from example import myPyClass
+    py::object myPyClass = py::module_::import("customPython.example").attr("myPyClass");
+    py::object mpc = myPyClass(1, 1);
+    py::object len1 = mpc.attr("euclength")();
+    float floatLen1 = len1.cast<float>();
+    std::cout << "length of origin to mpc before translation: " << floatLen1 << std::endl;
+    mpc.attr("translate")(2, 3);
+    py::object len2 = mpc.attr("euclength")();
+    float floatLen2 = len2.cast<float>();
+    std::cout << "length of origin to mpc after translation: " << floatLen2 << std::endl;
+
     std::cout << "End of tests" << std::endl;
     return EXIT_SUCCESS;
 }
