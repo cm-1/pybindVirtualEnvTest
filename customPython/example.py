@@ -13,7 +13,7 @@ class myPyClass:
         self.x += deltaX
         self.y += deltaY
 
-    def arrayOfThruples(self):
+    def arrayOfTriples(self):
         retVal = []
         for i in range(8):
             retVal.append((self.x, self.y, i))
