@@ -60,9 +60,51 @@ int main() {
         py::array reshaped = myArray.reshape({480, 640, 3});
         py::object result = runner.attr("processFrame")(reshaped);
 
-//        py::array points2D = result.attr("")
+        py::array points2D = result.attr("points2D");
+        py::array points3D = result.attr("points3D");
 
-        cv::imshow("result", frame);
+        py::buffer_info bufferPoints2D = points2D.request();
+        py::buffer_info bufferPoints3D = points3D.request();
+
+        double *ptrPoints2D = (double *) bufferPoints2D.ptr;
+
+
+        std::vector<cv::Scalar> colourList{cv::Scalar(0, 0, 255), cv::Scalar(0, 255, 0)};
+        // Iterate over all hands detected.
+        int numHands = bufferPoints2D.shape[0];
+        int numLandmarks = bufferPoints2D.shape[1];
+        int numDimsPerPt = bufferPoints2D.shape[2];
+
+        for (long handIndex = 0; handIndex < numHands; handIndex++) {
+            // Iterate over all points detected for said hand.
+            for (long landmarkIndex = 0; landmarkIndex < numLandmarks; landmarkIndex++) {
+                int xIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt;
+                int yIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt + 1;
+                int x = (int)(ptrPoints2D[xIndex]);
+                int y = (int)(ptrPoints2D[yIndex]);
+
+                cv::Point pt(x, y);
+                int circleRadius = 7;
+                cv::Scalar colour = colourList[handIndex];
+                int thickness = 3;
+                cv::circle(frame, pt, circleRadius, colour, thickness);
+            }
+        }
+
+        // Iterate over all outputed 3D points:
+//        for pointNum in range(handInfo.points3D.shape[0]):
+//            pt3D = handInfo.points3D[pointNum]
+//            projected = np.matmul(self.displayK, pt3D)
+//            pt2D = (projected[0]/projected[2], projected[1]/projected[2])
+//            pt2D_int = (int(pt2D[0]), int(pt2D[1]))
+
+//            circleRadius = 5
+//            colour = (255, 255, 0)
+//            thickness = 1
+
+//            frame = cv2.circle(frame, pt2D_int, circleRadius, colour, thickness)
+
+        cv::imshow("Qt Result", frame);
 
         int key = cv::waitKey(1);
         if(key == (int)'q')
