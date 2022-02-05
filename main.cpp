@@ -46,7 +46,7 @@ int main() {
     py::object getRunner = py::module_::import("HandMesh.runnerCreator").attr("getRunner");
     py::object testNumpyInput = py::module_::import("HandMesh.runnerCreator").attr("testNumpyInput");
     float focalLength = 634.f;
-    py::object runner = getRunner(634, 640);
+    py::object runner = getRunner(focalLength, 640);
 
     py::print("kMatrix:", runner.attr("kMatrix"), "flush"_a=true);
 
