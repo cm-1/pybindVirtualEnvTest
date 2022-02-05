@@ -45,9 +45,14 @@ int main() {
     // Performs "from example import myPyClass
     py::object getRunner = py::module_::import("HandMesh.runnerCreator").attr("getRunner");
     py::object testNumpyInput = py::module_::import("HandMesh.runnerCreator").attr("testNumpyInput");
+    float focalLength = 634.f;
     py::object runner = getRunner(634, 640);
 
     py::print("kMatrix:", runner.attr("kMatrix"), "flush"_a=true);
+
+    cv::Matx33f someK(focalLength, 0, 320,
+                    0, focalLength, 240,
+                    0, 0, 1);
 
 
     cv::Mat frame;
@@ -67,19 +72,21 @@ int main() {
         py::buffer_info bufferPoints3D = points3D.request();
 
         double *ptrPoints2D = (double *) bufferPoints2D.ptr;
+        double *ptrPoints3D = (double *) bufferPoints3D.ptr;
 
 
         std::vector<cv::Scalar> colourList{cv::Scalar(0, 0, 255), cv::Scalar(0, 255, 0)};
         // Iterate over all hands detected.
-        int numHands = bufferPoints2D.shape[0];
-        int numLandmarks = bufferPoints2D.shape[1];
-        int numDimsPerPt = bufferPoints2D.shape[2];
+        long numHands = bufferPoints2D.shape[0];
+        long numLandmarks = bufferPoints2D.shape[1];
+        long numDimsPerPt = bufferPoints2D.shape[2];
+
 
         for (long handIndex = 0; handIndex < numHands; handIndex++) {
             // Iterate over all points detected for said hand.
             for (long landmarkIndex = 0; landmarkIndex < numLandmarks; landmarkIndex++) {
-                int xIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt;
-                int yIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt + 1;
+                long xIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt;
+                long yIndex = handIndex * numLandmarks * numDimsPerPt + landmarkIndex * numDimsPerPt + 1;
                 int x = (int)(ptrPoints2D[xIndex]);
                 int y = (int)(ptrPoints2D[yIndex]);
 
@@ -91,18 +98,30 @@ int main() {
             }
         }
 
+        long numPoints3D = bufferPoints3D.shape[0];
+
         // Iterate over all outputed 3D points:
-//        for pointNum in range(handInfo.points3D.shape[0]):
-//            pt3D = handInfo.points3D[pointNum]
-//            projected = np.matmul(self.displayK, pt3D)
-//            pt2D = (projected[0]/projected[2], projected[1]/projected[2])
-//            pt2D_int = (int(pt2D[0]), int(pt2D[1]))
+        for (long pointIndex = 0; pointIndex < numPoints3D; pointIndex++) {
+            long baseIndex = 3 * pointIndex;
 
-//            circleRadius = 5
-//            colour = (255, 255, 0)
-//            thickness = 1
+            float x = ptrPoints3D[baseIndex];
+            float y = ptrPoints3D[baseIndex + 1];
+            float z = ptrPoints3D[baseIndex + 2];
 
-//            frame = cv2.circle(frame, pt2D_int, circleRadius, colour, thickness)
+            cv::Vec3f point3D(x, y, z);
+
+
+
+
+            cv::Vec3f projected = someK * point3D;
+            cv::Vec2f pt2D(projected[0]/projected[2], projected[1]/projected[2]);
+            cv::Point pt2D_int((int)pt2D[0], (int)pt2D[1]);
+
+            int circleRadius = 7;
+            cv::Scalar colour = cv::Scalar(255, 255, 0);
+            int thickness = 3;
+            cv::circle(frame, pt2D_int, circleRadius, colour, thickness);
+        }
 
         cv::imshow("Qt Result", frame);
 
