@@ -5,8 +5,10 @@ project(pybindVirtualEnvTest LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(OpenCV REQUIRED)
 
-set(VENV_ROOT_PATH "/home/u1/Documents/FunCoding/learningPybind/tempVenvDir/py35venv") # my custom var for convenience
+
+set(VENV_ROOT_PATH "/home/u1/Documents/FunCoding/learningPybind/HandMesh/env") # my custom var for convenience
 set(
     PYTHON_EXECUTABLE "${VENV_ROOT_PATH}/bin/python3"
     CACHE FILEPATH "python virtual environment executable")
@@ -24,9 +26,9 @@ message(STATUS "PYTHON_EXECUTABLE is now: ${PYTHON_EXECUTABLE}")    #DEBUG
 add_subdirectory(extern/pybind11)
 
 add_executable(pybindVirtualEnvTest main.cpp)
-target_link_libraries(pybindVirtualEnvTest PRIVATE pybind11::embed)
+target_link_libraries(pybindVirtualEnvTest PRIVATE pybind11::embed ${OpenCV_LIBS} )
 
-target_compile_definitions(pybindVirtualEnvTest PRIVATE -DVENV_SITE_PACKAGES_PATH="${VENV_ROOT_PATH}/lib/python3.5/site-packages")
+#target_compile_definitions(pybindVirtualEnvTest PRIVATE -DVENV_SITE_PACKAGES_PATH="${VENV_ROOT_PATH}/lib/python3.5/site-packages")
 
 set(LOCAL_PYTHON_FILES
     "example.py"
